@@ -1,0 +1,41 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Set up Energenie EG-PM2-LAN",
+                "description": "Make sure no browser session is open on the device — it supports only one session at a time.",
+                "data": {
+                    "ip": "IP Address",
+                    "password": "Password (leave empty if not set)",
+                    "scan_interval": "Status poll interval (seconds)"
+                }
+            },
+            "reconfigure": {
+                "title": "Reconfigure EG-PM2-LAN",
+                "description": "Update the IP address or password. The connection will be tested before saving.",
+                "data": {
+                    "ip": "IP Address",
+                    "password": "Password (leave empty if not set)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Cannot reach the device. Check IP address and network.",
+            "not_egpm_device": "Connected, but the response does not look like an EG-PM2-LAN."
+        },
+        "abort": {
+            "already_configured": "This device is already configured.",
+            "reconfigure_successful": "Configuration updated successfully."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "EG-PM2-LAN Options",
+                "data": {
+                    "scan_interval": "Status poll interval (seconds)"
+                }
+            }
+        }
+    }
+}

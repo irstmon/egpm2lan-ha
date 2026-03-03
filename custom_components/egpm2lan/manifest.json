@@ -1,0 +1,14 @@
+{
+    "domain": "egpm2lan",
+    "name": "Energenie EG-PM2-LAN",
+    "version": "1.0.0",
+    "documentation": "https://github.com/irstmon/egpm2lan-ha",
+    "issue_tracker": "https://github.com/irstmon/egpm2lan-ha/issues",
+    "requirements": [],
+    "dependencies": [],
+    "codeowners": [
+        "@irstmon"
+    ],
+    "iot_class": "local_polling",
+    "config_flow": true
+}
