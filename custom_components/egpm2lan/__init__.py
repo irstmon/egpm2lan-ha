@@ -1,4 +1,4 @@
-"""Energenie EG-PM2-LAN — Home Assistant integration."""
+"""Energenie EG-PM2-LAN - Home Assistant integration."""
 
 from __future__ import annotations
 
@@ -7,9 +7,11 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 from .const import (
+    CONF_INTER_OP_DELAY,
     CONF_IP,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
+    DEFAULT_INTER_OP_DELAY,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
@@ -25,11 +27,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ip=entry.data[CONF_IP],
         password=entry.data.get(CONF_PASSWORD, ""),
         scan_interval=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        inter_op_delay=entry.options.get(CONF_INTER_OP_DELAY, DEFAULT_INTER_OP_DELAY),
     )
 
     coordinator.start_daemon()
 
-    # First status poll — raises ConfigEntryNotReady if device unreachable
+    # First status poll - raises ConfigEntryNotReady if device unreachable
     await coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
@@ -49,5 +52,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload when options change (e.g. scan_interval)."""
+    """Reload when options change (e.g. scan_interval or inter_op_delay)."""
     await hass.config_entries.async_reload(entry.entry_id)

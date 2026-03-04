@@ -1,4 +1,4 @@
-"""Config flow — UI-based setup with live connection test."""
+"""Config flow - UI-based setup with live connection test."""
 
 from __future__ import annotations
 
@@ -18,45 +18,15 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_INTER_OP_DELAY,
     CONF_IP,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
+    DEFAULT_INTER_OP_DELAY,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_TIMEOUT,
     DOMAIN,
 )
-
-_IP_AND_PASSWORD_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_IP): TextSelector(
-            TextSelectorConfig(type=TextSelectorType.TEXT)
-        ),
-        vol.Optional(CONF_PASSWORD, default=""): TextSelector(
-            TextSelectorConfig(type=TextSelectorType.PASSWORD)
-        ),
-    }
-)
-
-
-def _setup_schema(defaults: dict) -> vol.Schema:
-    return vol.Schema(
-        {
-            vol.Required(CONF_IP, default=defaults.get(CONF_IP, "")): TextSelector(
-                TextSelectorConfig(type=TextSelectorType.TEXT)
-            ),
-            vol.Optional(
-                CONF_PASSWORD, default=defaults.get(CONF_PASSWORD, "")
-            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
-            vol.Optional(
-                CONF_SCAN_INTERVAL,
-                default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
-            ): NumberSelector(
-                NumberSelectorConfig(
-                    min=5, max=3600, step=5, mode=NumberSelectorMode.BOX
-                )
-            ),
-        }
-    )
 
 
 class EGPMConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -75,6 +45,9 @@ class EGPMConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             scan_interval = int(
                 user_input.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
             )
+            inter_op_delay = int(
+                user_input.get(CONF_INTER_OP_DELAY, DEFAULT_INTER_OP_DELAY)
+            )
 
             try:
                 await _test_connection(ip, password)
@@ -90,12 +63,38 @@ class EGPMConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=f"EG-PM2-LAN ({ip})",
                     data={CONF_IP: ip, CONF_PASSWORD: password},
-                    options={CONF_SCAN_INTERVAL: scan_interval},
+                    options={
+                        CONF_SCAN_INTERVAL: scan_interval,
+                        CONF_INTER_OP_DELAY: inter_op_delay,
+                    },
                 )
 
         return self.async_show_form(
             step_id="user",
-            data_schema=_setup_schema({}),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_IP): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.TEXT)
+                    ),
+                    vol.Optional(CONF_PASSWORD, default=""): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.PASSWORD)
+                    ),
+                    vol.Optional(
+                        CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=5, max=3600, step=5, mode=NumberSelectorMode.BOX
+                        )
+                    ),
+                    vol.Optional(
+                        CONF_INTER_OP_DELAY, default=DEFAULT_INTER_OP_DELAY
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=1, max=30, step=1, mode=NumberSelectorMode.BOX
+                        )
+                    ),
+                }
+            ),
             errors=errors,
         )
 
@@ -119,17 +118,14 @@ class EGPMConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except ValueError:
                 errors["base"] = "not_egpm_device"
             else:
-                # Update unique_id if IP changed
                 await self.async_set_unique_id(ip)
                 self._abort_if_unique_id_configured()
-
                 return self.async_update_reload_and_abort(
                     entry,
                     data_updates={CONF_IP: ip, CONF_PASSWORD: password},
                     reason="reconfigure_successful",
                 )
 
-        # Pre-fill form with current values
         current = {
             CONF_IP: entry.data.get(CONF_IP, ""),
             CONF_PASSWORD: entry.data.get(CONF_PASSWORD, ""),
@@ -159,7 +155,7 @@ class EGPMConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 async def _test_connection(ip: str, password: str) -> None:
-    """Login → fetch status → logout. Raise on failure or wrong device."""
+    """Login -> fetch status -> logout. Raise on failure or wrong device."""
     timeout = aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
     jar = aiohttp.CookieJar(unsafe=True)
     async with aiohttp.ClientSession(cookie_jar=jar, timeout=timeout) as session:
@@ -177,14 +173,17 @@ async def _test_connection(ip: str, password: str) -> None:
 
 
 class EGPMOptionsFlow(config_entries.OptionsFlow):
-    """Change scan_interval after initial setup."""
+    """Change scan_interval and inter_op_delay after initial setup."""
 
     async def async_step_init(
         self, user_input: dict | None = None
     ) -> config_entries.ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(
-                data={CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL])}
+                data={
+                    CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
+                    CONF_INTER_OP_DELAY: int(user_input[CONF_INTER_OP_DELAY]),
+                }
             )
         return self.async_show_form(
             step_id="init",
@@ -198,6 +197,16 @@ class EGPMOptionsFlow(config_entries.OptionsFlow):
                     ): NumberSelector(
                         NumberSelectorConfig(
                             min=5, max=3600, step=5, mode=NumberSelectorMode.BOX
+                        )
+                    ),
+                    vol.Optional(
+                        CONF_INTER_OP_DELAY,
+                        default=self.config_entry.options.get(
+                            CONF_INTER_OP_DELAY, DEFAULT_INTER_OP_DELAY
+                        ),
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=1, max=30, step=1, mode=NumberSelectorMode.BOX
                         )
                     ),
                 }

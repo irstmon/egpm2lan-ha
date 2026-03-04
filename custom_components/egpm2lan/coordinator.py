@@ -18,7 +18,7 @@ import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_INTER_OP_DELAY, DEFAULT_TIMEOUT, DOMAIN, NUMBER_OF_SOCKETS
+from .const import DEFAULT_TIMEOUT, DOMAIN, NUMBER_OF_SOCKETS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,8 +33,8 @@ class EGPMCoordinator(DataUpdateCoordinator[SocketStates]):
     requests and await the result via asyncio.Future - no race conditions,
     no overlapping sessions, guaranteed Login->Action->Logout per operation.
 
-    A mandatory cooldown of DEFAULT_INTER_OP_DELAY seconds is enforced after
-    every operation to prevent the device from crashing on rapid requests.
+    A mandatory cooldown of inter_op_delay seconds is enforced after every
+    operation to prevent the device from crashing on rapid requests.
     """
 
     def __init__(
@@ -43,6 +43,7 @@ class EGPMCoordinator(DataUpdateCoordinator[SocketStates]):
         ip: str,
         password: str,
         scan_interval: int,
+        inter_op_delay: int,
     ) -> None:
         super().__init__(
             hass,
@@ -52,6 +53,7 @@ class EGPMCoordinator(DataUpdateCoordinator[SocketStates]):
         )
         self._ip = ip
         self._password = password
+        self._inter_op_delay = inter_op_delay
         self._queue: asyncio.Queue = asyncio.Queue()
         self._daemon_task: asyncio.Task | None = None
 
@@ -106,9 +108,9 @@ class EGPMCoordinator(DataUpdateCoordinator[SocketStates]):
             # operation is dequeued. Applies to all operation types.
             _LOGGER.debug(
                 "EGPM2LAN: cooldown %ds before next operation",
-                DEFAULT_INTER_OP_DELAY,
+                self._inter_op_delay,
             )
-            await asyncio.sleep(DEFAULT_INTER_OP_DELAY)
+            await asyncio.sleep(self._inter_op_delay)
 
     # ------------------------------------------------------------------
     # Public API

@@ -3,11 +3,12 @@
         "step": {
             "user": {
                 "title": "Set up Energenie EG-PM2-LAN",
-                "description": "Make sure no browser session is open on the device — it supports only one session at a time.",
+                "description": "Make sure no browser session is open on the device - it supports only one session at a time.",
                 "data": {
                     "ip": "IP Address",
                     "password": "Password (leave empty if not set)",
-                    "scan_interval": "Status poll interval (seconds)"
+                    "scan_interval": "Status poll interval (seconds)",
+                    "inter_op_delay": "Minimum delay between operations (seconds)"
                 }
             },
             "reconfigure": {
@@ -33,7 +34,8 @@
             "init": {
                 "title": "EG-PM2-LAN Options",
                 "data": {
-                    "scan_interval": "Status poll interval (seconds)"
+                    "scan_interval": "Status poll interval (seconds)",
+                    "inter_op_delay": "Minimum delay between operations (seconds)"
                 }
             }
         }

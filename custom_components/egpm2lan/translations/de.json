@@ -3,16 +3,17 @@
         "step": {
             "user": {
                 "title": "Energenie EG-PM2-LAN einrichten",
-                "description": "Stelle sicher dass keine Browser-Session auf dem Gerät offen ist – die Steckdosenleiste unterstützt nur eine gleichzeitige Verbindung.",
+                "description": "Stelle sicher dass keine Browser-Session auf dem Ger\u00e4t offen ist \u2013 die Steckdosenleiste unterst\u00fctzt nur eine gleichzeitige Verbindung.",
                 "data": {
                     "ip": "IP-Adresse",
                     "password": "Passwort (leer lassen falls keines gesetzt)",
-                    "scan_interval": "Status-Abfrageintervall (Sekunden)"
+                    "scan_interval": "Status-Abfrageintervall (Sekunden)",
+                    "inter_op_delay": "Mindestpause zwischen Schaltbefehlen (Sekunden)"
                 }
             },
             "reconfigure": {
                 "title": "EG-PM2-LAN neu konfigurieren",
-                "description": "IP-Adresse oder Passwort ändern. Die Verbindung wird beim Speichern getestet.",
+                "description": "IP-Adresse oder Passwort \u00e4ndern. Die Verbindung wird beim Speichern getestet.",
                 "data": {
                     "ip": "IP-Adresse",
                     "password": "Passwort (leer lassen falls keines gesetzt)"
@@ -20,11 +21,11 @@
             }
         },
         "error": {
-            "cannot_connect": "Gerät nicht erreichbar. IP-Adresse und Netzwerk prüfen.",
+            "cannot_connect": "Ger\u00e4t nicht erreichbar. IP-Adresse und Netzwerk pr\u00fcfen.",
             "not_egpm_device": "Verbindung erfolgreich, aber keine EG-PM2-LAN erkannt."
         },
         "abort": {
-            "already_configured": "Dieses Gerät ist bereits konfiguriert.",
+            "already_configured": "Dieses Ger\u00e4t ist bereits konfiguriert.",
             "reconfigure_successful": "Konfiguration erfolgreich aktualisiert."
         }
     },
@@ -33,7 +34,8 @@
             "init": {
                 "title": "EG-PM2-LAN Optionen",
                 "data": {
-                    "scan_interval": "Status-Abfrageintervall (Sekunden)"
+                    "scan_interval": "Status-Abfrageintervall (Sekunden)",
+                    "inter_op_delay": "Mindestpause zwischen Schaltbefehlen (Sekunden)"
                 }
             }
         }

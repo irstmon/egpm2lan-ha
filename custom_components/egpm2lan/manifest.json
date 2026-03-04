@@ -1,7 +1,7 @@
 {
     "domain": "egpm2lan",
     "name": "Energenie EG-PM2-LAN",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "documentation": "https://github.com/irstmon/egpm2lan-ha",
     "issue_tracker": "https://github.com/irstmon/egpm2lan-ha/issues",
     "requirements": [],
